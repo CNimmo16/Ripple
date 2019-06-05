@@ -18,7 +18,8 @@ export default {
       window.location.href = "https://accounts.spotify.com/authorize"
       + "?client_id=a1e165ead0e74ae299f926b4c798fe33"
       + "&scope=" + encodeURIComponent(scopes)
-      + "&redirect_uri=https://c5fabfda147e4c05adbc377391e4eaaa.vfs.cloud9.eu-west-1.amazonaws.com/play"
+      // + "&redirect_uri=https://c5fabfda147e4c05adbc377391e4eaaa.vfs.cloud9.eu-west-1.amazonaws.com/play"
+      + "&redirect_uri=" + window.location.origin + "/play"
       + "&response_type=token"
     } else {
       let token = window.location.hash.substr(1)
