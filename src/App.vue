@@ -25,6 +25,7 @@ export default {
       let token2 = token.substr(token.indexOf("=")+1)
       let token3 = token2.substr(0, token2.indexOf("&"))
       this.$spotify.setAccessToken(token3);
+      this.$store.commit("setToken", token3)
     }
   }
 }
