@@ -1,10 +1,14 @@
 <template>
-    <div class="track-card" @mouseenter="$emit('grow', $vnode.key)" @mouseleave="$emit('shrink', $vnode.key)" :class="{ current: $vnode.key === 3, previous: $vnode.key < 3, next: $vnode.key > 3 }">
+    <div class="track-card"
+        @click.stop="handleClick()" 
+        @mouseenter.stop="$emit('grow', $vnode.key)" 
+        @mouseleave.stop="$emit('shrink', $vnode.key)" 
+        :class="{ current: $vnode.key === current, previous: $vnode.key < current, next: $vnode.key > current }">
         <article>
-            <div class="current-track-header" v-if="$vnode.key === 3">
+            <div class="track-header" :class="{ active: $vnode.key === current && trackChanging === false }">
                 Now Playing
             </div>
-            <div class="current-track-header" v-if="$vnode.key === 4">
+            <div class="track-header" :class="{ active: $vnode.key === current+1 && trackChanging === false }">
                 Up next
             </div>
             <img class="cover" :src="track.cover">
@@ -20,16 +24,17 @@
                 <img src="@/assets/icons/album.svg">
                 <h3>{{ track.album }}</h3>
             </div>
-            <div class="overlay" :style="{ opacity: position.opacity*2 }"></div>
+            <div v-if="position" class="overlay" :style="{ opacity: position.opacity*2 }"></div>
             
-            <Controls v-if="$vnode.key === 3" />
-            <button class="return-button" v-if="$vnode.key < 3">
+            <Controls :active="$vnode.key === current && trackChanging === false" />
+            
+            <button class="return button" v-if="$vnode.key < current">
                 Click to return to track
             </button>
-            <button class="return-button" v-if="$vnode.key === 4">
-                Currently playing next
+            <button class="next" v-if="$vnode.key === current+1">
+                Click to skip to track
             </button>
-            <button class="return-button" v-if="$vnode.key > 4">
+            <button class="next button" v-if="$vnode.key > current+1">
                 Click to play next
             </button>
         </article>
@@ -42,54 +47,74 @@
 
     export default {
         name: "TrackCard",
-        props: ["track", "position"],
+        props: ["track", "position", "current", "trackChanging"],
         components: {
             Controls
-        },
-        computed: {
-            styles() {
-                return {
-                    transform: `scale(${this.scale}) translateX(${this.left}px)`
-                }
-            }
         },
         watch: {
             position(newValue) {
                 const vars = {}
-                if(newValue.translateX) { vars.x = newValue.translateX }
-                if(newValue.translateY) { vars.y = newValue.translateY }
-                if(newValue.translateZ) { vars.z = newValue.translateZ }
-                if(newValue.scale) { vars.scale = newValue.scale }
-                if(newValue.rotationY) { vars.rotationY = newValue.rotationY }
-                this.$gsap.to(this.$el, 0.2, {css: vars});
+                const playerBounds = window.document.getElementsByClassName("player-view")[0].getBoundingClientRect()
+                const cardHeight = window.document.getElementsByClassName("track-card")[0].clientHeight
+                if(newValue.translateX) { 
+                    const cardWidth = window.document.getElementsByClassName("track-card")[0].clientWidth
+                    const calc = playerBounds.width - cardWidth;
+                    const transx = ( newValue.translateX * calc / 100 ) - cardWidth / 2
+                    vars.x = ( newValue.translateX * calc / 100 ) - cardWidth / 2
+                } else { vars.x = 0 }
+                vars.y = newValue.translateY ? (( newValue.translateY * playerBounds.height / 100 ) - cardHeight / 2) : cardHeight / 2 * -1
+                // if(newValue.translateY) { 
+                //     vars.y = ( newValue.translateY * playerBounds.height / 100 ) - cardHeight / 2
+                // } else {
+                //     vars.y = cardHeight / 2 * -1
+                // }
+                vars.z = newValue.translateZ ? newValue.translateZ : 2000
+                if(newValue.scale) { 
+                    let newScale = newValue.scale * ((playerBounds.height + 913) / 1850)
+                    if(newScale * cardHeight * 1.3 > playerBounds.height - 20) {
+                        newScale = (playerBounds.height - 20) / (cardHeight * 1.3)
+                    }
+                    vars.scale = newScale
+                } else { vars.scale = 1 }
+                vars.rotationY = newValue.rotateY ? newValue.rotateY : 0;
+                this.$gsap.to(this.$el, 0.5, {css: vars});
             },
         },
+        methods: {
+            handleClick() {
+                if(this.$vnode.key >= 4 && this.$vnode.key <= 6) {
+                    if(this.$vnode.key <= this.current + 1) {
+                        this.$emit('skip-to', this.$vnode.key)
+                    } else {
+                        this.$emit('play-next', this.$vnode.key)
+                    }
+                } else {
+                    this.$emit("demo-alert")
+                }
+            }
+        }
     }
 </script>
 
 <style lang="scss">
     .track-card {
-        width: 310px;
+        width: 350px;
         height: 520px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         position: absolute;
-        left: 10px;
-        top: 10px;
+        left: 50%;
+        top: 50%;
+        box-sizing: border-box;
         &.previous article {
             .overlay { background: linear-gradient(to right, rgb(11, 0, 45) 0%, rgba(11, 0, 45, 0.6) 20%, rgba(0, 0, 0, 0.4) 100%); }
             cursor: pointer;
             &:hover {
                 .overlay { opacity: 0 !important; }
-                .return-button {
+                button {
                     transform: translateY(0) !important;
                 }
-            }
-        }
-        &.current article {
-            &:hover { 
-                .play-controls { transform: translateY(0) }; 
             }
         }
         &.next article {
@@ -98,7 +123,7 @@
             cursor: pointer;
             &:hover {
                 .overlay { opacity: 0 !important; }
-                .return-button {
+                button {
                     transform: translateY(0) !important;
                 }
             }
@@ -106,6 +131,7 @@
         article {
             position: relative;
             width: 100%;
+            box-sizing: border-box;
             height: fit-content;
             display: flex;
             flex-direction: column;
@@ -160,7 +186,8 @@
             transition: opacity 0.3s;
             pointer-events: none
         }
-        .current-track-header {
+        .track-header {
+            z-index: -5;
             position: absolute;
             bottom: 100%;
             left: 0;
@@ -171,13 +198,17 @@
             font-weight: 500;
             padding: 10px;
             box-sizing: border-box;
+            transform: translateY(50px);
+            transition: transform 0.3s;
+            &.active {
+                transform: translateY(0);
+            }
         }
-        .return-button {
+        button {
             position: absolute;
             top: 100%;
             left: 0;
             width: 100%;
-            background-color: #67da95;
             height: 45px;
             font-size: 1.2em;
             transform: translateY(-45px);
@@ -186,6 +217,7 @@
             z-index: -1;
             border: none;
             outline: none;
+            background-color: #67da95;
         }
     }
 </style>

@@ -1,5 +1,33 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:200,300,400,500,600&display=swap');
 
+// Variables
+$breakpoints: (
+    "small-phone":        400px,
+    "phone":   480px,
+    "large-phone":      560px,
+    "small-tablet": 640px,
+    "tablet":       768px,
+    "large-tablet":  1024px,
+    "small-monitor":      1248px,
+    "large-monitor": 1440px,
+    "huge-monitor": 1700px
+);
+@mixin mq($width, $type: min) {
+    @if map_has_key($breakpoints, $width) {
+        $width: map_get($breakpoints, $width);
+        @if $type == max {
+            $width: $width - 1px;
+        }
+        @media only screen and (#{$type}-width: $width) {
+            @content;
+        }
+    }
+}
+
+body {
+    margin: 0;
+}
+
 #app {
     font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
     font-weight: 400;

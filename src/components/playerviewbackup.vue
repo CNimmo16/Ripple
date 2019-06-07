@@ -2,22 +2,9 @@
     <!--<div class="player" id="player-view">-->
     <div class="player-view" @mousemove="getCurrPosition($event)">
         <div class="player">
-            <TrackCard
-                v-for="(track, index) in tracks" 
-                :track="track" :key="index" 
-                :position="currPosition[index]" 
-                :current="current" 
-                :trackChanging="trackChanging" 
-                @grow="grow(index)" 
-                @shrink="shrink(index)" 
-                @skip-to="skipTo(index)" 
-                @play-next="playNext(index)"
-                @demo-alert="fireDemoAlert()" />
+            <TrackCard v-for="(track, index) in tracks" :track="track" :key="index" :position="currPosition[index]" :current="current" :trackChanging="trackChanging" @grow="grow(index)" @shrink="shrink(index)" @skip-to="skipTo(index)" />
         </div>
         <!--<div class="line">|</div>-->
-        <transition name="fade">
-            <div class="demo-alert" v-if="demoAlertActive">Woah, this is just a demo application! There is no suggested song algorithm, so only 3 playable tracks have been included for demonstration purposes.</div>
-        </transition>
     </div>
 </template>
 
@@ -53,13 +40,11 @@ export default {
             ],
             hovered: null,
             trackChanging: false,
-            demoAlertActive: false,
             positions: {
                 mouseLeft: [
                     // vanishing
-                    { rotateY: -25, translateZ: 1600, translateX: -62, scale: 0.38, opacity: 0.55 },
+                    { rotateY: -20, translateZ: 1680, translateX: -60.9, scale: 0.76, opacity: 0.45 },
                     // previous tracks
-                    { rotateY: -20, translateZ: 1680, translateX: -59.5, scale: 0.68, opacity: 0.55 },
                     { rotateY: -15, translateZ: 1760, translateX: -45.9, scale: 0.83, opacity: 0.25 },
                     { rotateY: -9, translateZ: 1840, translateX: -31.1, scale: 0.93, opacity: 0.15 },
                     { rotateY: -4, translateZ: 1920, translateX: -11.7, scale: 0.97, opacity: 0.07 },
@@ -69,15 +54,14 @@ export default {
                     { rotateY: 7, translateZ: 1800, translateX: 30.4, translateY: 0, scale: 0.81, opacity: 0.17  },
                     { rotateY: 7, translateZ: 1600, translateX: 45.3, translateY: -25.2, scale: 0.8, opacity: 0.4  },
                     { rotateY: 7, translateZ: 1400, translateX: 54.5, translateY: 13.1, scale: 0.79, opacity: 0.66  },
-                    { rotateY: 7, translateZ: 1200, translateX: 65.8, translateY: -8.8, scale: 0.77, opacity: 0.8  },
+                    { rotateY: 7, translateZ: 1200, translateX: 70.8, translateY: -8.8, scale: 0.77, opacity: 0.8  },
                     // vanishing
-                    { rotateY: 10, translateZ: 1100, translateX: 63, scale: 0.38, opacity: 0.9 },
+                    { rotateY: 7, translateZ: 1100, translateX: 85.9, scale: 0.76, opacity: 0.9 },
                 ],
                 mouseRight: [
                     // vanishing
-                    { rotateY: -20, translateZ: 1000, translateX: -62, scale: 0.58, opacity: 0.45 },
+                    { rotateY: -20, translateZ: 1200, translateX: -60.9, scale: 0.76, opacity: 0.45 },
                     // previous tracks
-                    { rotateY: -20, translateZ: 1200, translateX: -60.9, scale: 0.68, opacity: 0.45 },
                     { rotateY: -37, translateZ: 1400, translateX: -55, scale: 0.75, opacity: 0.66 },
                     { rotateY: -25, translateZ: 1600, translateX: -43.7, scale: 0.82, opacity: 0.4 },
                     { rotateY: -13, translateZ: 1800, translateX: -28.2, scale: 0.93, opacity: 0.17 },
@@ -89,52 +73,11 @@ export default {
                     { rotateY: 2, translateZ: 1760, translateX: 36.5, translateY: 19.7, scale: 0.73, opacity: 0.07  },
                     { rotateY: 1, translateZ: 1680, translateX: 58.1, translateY: 2.2, scale: 0.72, opacity: 0.07  },
                     // vanishing
-                    { rotateY: 3, translateZ: 1600, translateX: 62, scale: 0.4, opacity: 0.9 },
+                    { rotateY: 1, translateZ: 1600, translateX: 70, scale: 0.7, opacity: 0.2 },
                 ]
             },
-            hoverPositions: [
-                { r: 9, t: 10 },
-                
-                { r: 9, t: 10 },
-                { r: 7, t: 6 },
-                { r: 6, t: 3 },
-                { r: 3, t: -1 },
-                { r: 0, t: 0 },
-                { r: -3, t: 0 },
-                { r: -4, t: -4 },
-                { r: -5, t: -5 },
-                { r: -5, t: -10 },
-                
-                { r: -5, t: -10 }
-                
-                // adhd     inc 380        r 9       trans 10
-                // bullet       320         7           6
-                // logique      240         6           3
-                // dont@me      144         3           -1
-                // greaze
-                // loyalty      144         -3          0
-                // leave        235         -4          -4
-                // poemans      340         -5          -5
-                // cherie       390         -5          -10     
-            ],
-            current: 5,
+            current: 3,
             tracks: [
-                // Vanishing
-                {
-                    cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta"],
-                    title: "Bullet From A Gun",
-                    type: "album",
-                    album: "Ignorance is Bliss"
-                },
-                // Previous tracks
-                {
-                    cover: require("@/assets/cover-art/section80.jpg"),
-                    artists: ["Kendrick Lamar"],
-                    title: "A.D.H.D.",
-                    type: "album",
-                    album: "Section.80"
-                },
                 {
                     cover: require("@/assets/cover-art/skepta.jpg"),
                     artists: ["Skepta"],
@@ -188,6 +131,7 @@ export default {
                     type: "album",
                     album: "Section.80"
                 },
+                
                 {
                     cover: require("@/assets/cover-art/logique.jpg"),
                     artists: ["-M-"],
@@ -195,41 +139,20 @@ export default {
                     type: "album",
                     album: "Lettre infinie"
                 },
-                
-                // Vanishing
-                {
-                    cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta"],
-                    title: "Bullets for fun",
-                    type: "album",
-                    album: "Ignorance is Bliss"
-                },
             ]
         }
     },
     methods: {
-        fireDemoAlert() {
-            if(this.demoAlertActive === false) {
-                this.demoAlertActive = true;
-                window.setTimeout(() => {
-                    this.demoAlertActive = false;
-                }, 5000)
-            }
-        },
         grow(key) {
             // never grow current track
             if(key !== this.current) {
                 this.hovered = key
             }
-            this.getCurrPosition(null);
+            this.getCurrPosition(null, true);
         },
         shrink() {
             this.hovered = null;
             this.getCurrPosition();
-        },
-        playNext(key) {
-            // this.trackChanging = true;
-            this.tracks.splice(this.current+1, 0, this.tracks.splice(key, 1)[0]);
         },
         skipTo(key) {
             if(key !== this.current) {
@@ -242,40 +165,28 @@ export default {
                 }, 500)
             }
         },
-        getCurrPosition: throttle(100, function(event) {
+        getCurrPosition: throttle(100, function(event, hover) {
             const bounds = window.document.getElementsByClassName("player-view")[0].getBoundingClientRect()
             const leftness = event ? (event.clientX - bounds.x) / bounds.width : 0.5;
 
             let toSet = []
             
-            let startFrom = 5 - this.current
+            let startFrom = 4 - this.current
+            if(startFrom < 0) { startFrom = 0 }
             
-            let positions = null
-            if(startFrom > 0) { 
-                positions = {
-                    mouseLeft: this.positions.mouseLeft.slice(startFrom),
-                    mouseRight: this.positions.mouseRight.slice(startFrom)
-                }
-            } else if(startFrom < 0) {
-                positions = {
-                    mouseLeft: [{ rotateY: -25, translateZ: 1400, translateX: -62, scale: 0.38, opacity: 0.55 }].concat(this.positions.mouseLeft).concat([{}]),
-                    mouseRight: [{ rotateY: -25, translateZ: 600, translateX: -62, scale: 0.38, opacity: 0.55 }].concat(this.positions.mouseRight).concat([{}])
-                }
-            } else {
-                positions = this.positions;
-            }
             
-            for(let i=0; i<positions.mouseLeft.length; i++) {
+            
+            for(let i=startFrom; i<this.positions.mouseLeft.length; i++) {
                 // const params = ["translateZ", "rotateY", "scale"]
                 let toPush = {};
-                for (const [key] of Object.entries(positions.mouseLeft[i])) {
-                    const a = positions.mouseLeft[i][key];
-                    const b = positions.mouseRight[i][key];
+                for (const [key] of Object.entries(this.positions.mouseLeft[i])) {
+                    const a = this.positions.mouseLeft[i][key];
+                    const b = this.positions.mouseRight[i][key];
                     toPush[key] = a + ((b-a) * leftness)
                 }
                 toSet.push(toPush)
             }
-            if(typeof this.hovered === "number" && this.trackChanging === false && this.hovered !== this.current) {
+            if(typeof this.hovered === "number" && this.trackChanging === false && hover) {
                 const key = this.hovered
 
                 const scaleVals = [0.95, 0.97, 0.98, 0.98, 0.98, 0.98]
@@ -284,38 +195,30 @@ export default {
                 toSet[key].scale = toSet[key].scale * scaleVals[0];
 
                 const increase = 2020 - toSet[key].translateZ;
-                console.log(increase)
+                // console.log(increase)
                 toSet[key].translateZ = 2020
                 
-                // const rotateEq = ( -1.769315 + 0.00006264449*increase + 0.00007140726*Math.pow(increase,2) ) * 4;
-                // toSet[key].rotateY += key < 6 ? rotateEq : -7;
+                const rotateEq = ( -1.769315 + 0.00006264449*increase + 0.00007140726*Math.pow(increase,2) ) * 4;
+                toSet[key].rotateY += key < 4 ? rotateEq : -7;
                 
-                toSet[key].rotateY += this.hoverPositions[key - (this.current - 5)].r
-                toSet[key].translateX += this.hoverPositions[key - (this.current - 5)].t
-                
-                // adhd     inc 380        r 9       trans 10
-                // bullet       320         7           6
-                // logique      240         6           3
-                // dont@me      144         3           -1
-                // greaze
-                // loyalty      144         -3          0
-                // leave        235         -4          -4
-                // poemans      340         -5          -5
-                // cherie       390         -5          -10    
-                
-                // if(key < 6) {
-                //     toSet[key].translateX += ( 1026.51 - 15.60256*increase + 0.0744692*Math.pow(increase,2) - 0.0001106055*Math.pow(increase,3) ) / 14.18
-                // } else {
-                //     toSet[key].translateX += ( 667.2059 - 8.958401*increase + 0.0367121*Math.pow(increase,2) - 0.00004923846*Math.pow(increase,3) ) / 14.18
-                // }
+                if(key < 4) {
+                    toSet[key].translateX += ( 1026.51 - 15.60256*increase + 0.0744692*Math.pow(increase,2) - 0.0001106055*Math.pow(increase,3) ) / 14.18
+                } else {
+                    toSet[key].translateX += ( 667.2059 - 8.958401*increase + 0.0367121*Math.pow(increase,2) - 0.00004923846*Math.pow(increase,3) ) / 14.18
+                }
+
+                // damn         inc 145     transx 0
+                // leaveme      inc 232     transx -50
+                // section      inc 340     transx -70
+                // cherie       inc 385     transx -150
 
                 for(var i=1; i<toSet.length; i++) {
-                    if(key - i >= 5 && key-i !== this.current) {
+                    if(key - i >= 0 && key-i !== 3) {
                         toSet[key-i].scale = toSet[key-i].scale * scaleVals[i];
                         // toSet[key-i].translateX = toSet[key-i].translateX + leftVals[i]
                         // toSet[key-i].translateX = toSet[key-i].translateX + (toSet[key+1].translateZ - toSet[key].translateZ)
                     }
-                    if(key + i < toSet.length-6 && key+i !== this.current) {
+                    if(key + i < toSet.length && key+i !== 3) {
                         toSet[key+i].scale = toSet[key+i].scale * scaleVals[i];
                         // toSet[key+i].translateX = toSet[key+i].translateX + leftVals[i]
                         // toSet[key+i].translateX = toSet[key+i].translateX + (toSet[key+1].translateZ - toSet[key].translateZ)
@@ -365,25 +268,5 @@ export default {
     background-color: red;
     width: 100vw;
     justify-content: center;
-}
-
-.demo-alert {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 4%;
-    background-color: rgba(0,0,0,0.7);
-    color: #fff;
-    border-radius: 450px;
-    text-align: center;
-    font-size: 1em;
-    padding: 5px 20px;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-    <div class="controls" @mousemove.stop="">
-        <div class="play-controls" :class="{ paused: isPaused }">
+    <div class="controls" @mousemove.stop="" :class="{ active: active }">
+        <div class="play-controls">
             <div class="loop icon">
                 <img src="@/assets/icons/player/repeat-one.svg">
             </div>
@@ -33,6 +33,7 @@
                 playerID: null,
             }
         },
+        props: ["active"],
         computed: {
             playlist() {
                 return this.$store.state.playlist
@@ -95,23 +96,21 @@
                 // Get user's playback state
                 this.$spotify.getMyCurrentPlaybackState((err, res) => {
                     if(err) {
-                        this.active = null;
+                        // this.active = null;
                     } else if(res.device && res.device.id === this.playerID) {
                         options.device_id = this.playerID
                         this.spotifyPlayWithAPI(options, album);
-                        this.active = true;
+                        // this.active = true;
                     } else {
                         options.device_id = this.playerID
                         this.transferSpotifyPlaybackToDropt(options, album);
-                        this.active = true;
+                        // this.active = true;
                     }
                 });
             },
             spotifyPlayWithAPI(options, album) {
                 this.$spotify.play(options).then(() => {
                     this.isPaused = false;
-                    this.currPlatform = "spotify";
-                    this.setPlaying(album);
                 })
             },
             transferSpotifyPlaybackToDropt(options, album) {
@@ -182,18 +181,18 @@
     left: 0;
     right: 0;
     z-index: -5;
+    transform: translateY(-85px);
+    transition: transform 0.3s;
+    &.active {
+        transform: translateY(0);
+    }
     .play-controls {
-        transform: translateY(-65px);
         /*transition: transform 0.3s;*/
         display: flex;
         background-color: #000;
-        transition: transform 0.3s;
         height: 65px;
         align-items: center;
         justify-content: center;
-        &.paused {
-            transform: translateY(0);
-        }
         .icon {
             width: 42px;
             height: 42px;
