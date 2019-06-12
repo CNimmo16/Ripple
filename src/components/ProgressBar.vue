@@ -18,10 +18,26 @@
                 position: "0:00",
                 duration: "3:35",
                 percentRaw: 0,
-                seekPercentRaw: 0
+                seekPercentRaw: 0,
+                animation: null
+            }
+        },
+        props: ["index", "isPlaying", "active"],
+        watch: {
+            durationRaw(newValue) {
+                this.slideBar()
+            },
+            isPlaying(newValue) {
+                this.togglePlay(newValue)
             }
         },
         computed: {
+            durationRaw() {
+                return this.$store.state.duration
+            },
+            positionRaw() {
+                return this.$store.state.position
+            },
             percent() {
                 return (this.seekPercentRaw*100).toFixed(2) + "%"
             },
@@ -29,24 +45,37 @@
                 return (this.seekPercentRaw*100).toFixed(2) + "%"
             }
         },
-        mounted() {
-            // window.clearInterval(window.int)
-            // window.int = window.setInterval(() => {
-                // this.seekPercentRaw += 0.001
-                this.$gsap.to(window.document.getElementsByClassName("fill")[0], 170, {
-                    scaleX: 350,
-                    ease: "linear"
-                })
-            // }, 1000)
-            
-        },
         methods: {
-            getSeeking(event) {
-                const orig = window.document.getElementsByClassName("progress-bar")[0].getBoundingClientRect().left;
-                const offset = event.clientX - orig;
-                const width = window.document.getElementsByClassName("progress-bar")[0].clientWidth;
-                this.seekPercentRaw = offset / width;
+            slideBar() {
+                if(this.active) {
+                    this.$gsap.killAll();
+                    const toIncrease = this.durationRaw - this.positionRaw;
+                    const scaleFrom = this.positionRaw / this.durationRaw * 350
+                    console.log(toIncrease)
+                    console.log(scaleFrom)
+                    this.$gsap.fromTo(window.document.getElementsByClassName("fill")[this.index], toIncrease, {css: {scaleX: scaleFrom}}, {css: {scaleX: 350},
+                        ease: "linear",
+                    })
+                }
             },
+            togglePlay(play) {
+                if(this.active) {
+                    if(play) {
+                        this.slideBar()
+                    } else {
+                        this.$gsap.killAll();
+                    }
+                }
+            },
+            getSeeking(event) {
+                if(this.active) {
+                    const rect = window.document.getElementsByClassName("progress-bar")[this.index].getBoundingClientRect()
+                    const orig = rect.left;
+                    const offset = event.clientX - orig;
+                    const width = rect.width;
+                    this.seekPercentRaw = offset / width;
+                }
+            }
         }
     }
 </script>

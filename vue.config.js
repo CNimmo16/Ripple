@@ -8,5 +8,6 @@ module.exports = {
                 data: `@import "@/assets/scss/main.scss";`
             }
         }
-    }
+    },
+    // publicPath: "/Ripple/"
 }

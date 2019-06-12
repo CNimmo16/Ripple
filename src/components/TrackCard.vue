@@ -21,12 +21,13 @@
             </div>
             <h2 class="title">{{ track.title }}</h2>
             <div class="album">
-                <img src="@/assets/icons/album.svg">
+                <img v-if="track.type === 'album'" src="@/assets/icons/album.svg">
+                <img v-else src="@/assets/icons/single.svg">
                 <h3>{{ track.album }}</h3>
             </div>
             <div v-if="position" class="overlay" :style="{ opacity: position.opacity*2 }"></div>
             
-            <Controls :active="$vnode.key === current && trackChanging === false" />
+            <Controls :active="$vnode.key === current && trackChanging === false" @skip-previous="$emit('skip-previous')" @skip-next="$emit('skip-next')" @toggle-play="$emit('toggle-play')" :index="$vnode.key" />
             
             <button class="return button" v-if="$vnode.key < current">
                 Click to return to track

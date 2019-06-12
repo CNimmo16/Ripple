@@ -7,11 +7,15 @@
                 :track="track" :key="index" 
                 :position="currPosition[index]" 
                 :current="current" 
-                :trackChanging="trackChanging" 
+                :trackChanging="trackChanging"
                 @grow="grow(index)" 
                 @shrink="shrink(index)" 
                 @skip-to="skipTo(index)" 
                 @play-next="playNext(index)"
+                
+                @skip-previous="skipTo(current-1)"
+                @skip-next="skipTo(current+1)"
+                @toggle-play="togglePlay()"
                 @demo-alert="fireDemoAlert()" />
         </div>
         <!--<div class="line">|</div>-->
@@ -38,6 +42,7 @@ export default {
             });
         })
         this.getCurrPosition();
+        this.playAudio();
     },
     data() {
         return {
@@ -118,16 +123,31 @@ export default {
                 // cherie       390         -5          -10     
             ],
             current: 5,
+            isPlaying: true,
             tracks: [
                 // Vanishing
                 {
                     cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta"],
-                    title: "Bullet From A Gun",
+                    artists: ["Skepta", "Nafe Smallz"],
+                    title: "Greaze Mode",
                     type: "album",
                     album: "Ignorance is Bliss"
                 },
                 // Previous tracks
+                {
+                    cover: require("@/assets/cover-art/dont@me.jpg"),
+                    artists: ["Jay Critch"],
+                    title: "Don't @ Me",
+                    type: "single",
+                    album: "Don't @ Me"
+                },
+                {
+                    cover: require("@/assets/cover-art/igor.jpg"),
+                    artists: ["Tyler, The Creator"],
+                    title: "NEW MAGIC WAND",
+                    type: "album",
+                    album: "IGOR"
+                },
                 {
                     cover: require("@/assets/cover-art/section80.jpg"),
                     artists: ["Kendrick Lamar"],
@@ -136,78 +156,74 @@ export default {
                     album: "Section.80"
                 },
                 {
-                    cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta"],
-                    title: "Bullet From A Gun",
-                    type: "album",
-                    album: "Ignorance is Bliss"
-                },
-                {
-                    cover: require("@/assets/cover-art/logique.jpg"),
-                    artists: ["-M-"],
-                    // title: "Logique est ton écho",
-                    title: "Logique écho",
-                    type: "album",
-                    album: "Lettre infinie"
-                },
-                {
-                    cover: require("@/assets/cover-art/dont@me.jpg"),
-                    artists: ["Jay Critch"],
-                    title: "Don't @ Me",
+                    cover: require("@/assets/cover-art/eucalyptus.jpg"),
+                    artists: ["Koresma", "Marley Carroll"],
+                    title: "Eucalyptus",
                     type: "single",
-                    album: "Don't @ Me"
+                    album: "Eucalyptus",
+                    audio: "eucalyptus"
                 },
                 // current track
                 {
-                    cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta", "Nafe Smallz"],
-                    title: "Greaze Mode",
+                    cover: require("@/assets/cover-art/impala.jpg"),
+                    artists: ["Tame Impala"],
+                    title: "Mind Mischief",
                     type: "album",
-                    album: "Ignorance is Bliss"
+                    album: "Lonerism",
+                    audio: "mind-mischief"
                 },
-                
                 // next tracks
                 {
-                    cover: require("@/assets/cover-art/damn.jpeg"),
-                    artists: ["Kendrick Lamar", "Rihanna"],
-                    title: "LOYALTY. FEAT. RIHANNA.",
-                    type: "album",
-                    album: "DAMN."
-                },
-                {
-                    cover: require("@/assets/cover-art/leaveme.png"),
-                    artists: ["Flipp Dinero"],
-                    title: "Leave Me Alone",
+                    cover: require("@/assets/cover-art/move-me.jpg"),
+                    artists: ["Mura Masa", "Octavian"],
+                    title: "Move Me",
                     type: "single",
-                    album: "Leave Me Alone"
+                    album: "Move Me",
+                    audio: "move-me"
                 },
                 {
-                    cover: require("@/assets/cover-art/section80.jpg"),
-                    artists: ["Kendrick Lamar"],
-                    title: "Poe Mans Dreams (His Vice)",
+                    cover: require("@/assets/cover-art/third-room.jpg"),
+                    artists: ["Khruangbin"],
+                    title: "Evan Finds the Third Room",
                     type: "album",
-                    album: "Section.80"
+                    album: "Con Todo El Mundo"
                 },
                 {
-                    cover: require("@/assets/cover-art/logique.jpg"),
-                    artists: ["-M-"],
-                    title: "Superchérie",
+                    cover: require("@/assets/cover-art/lime-cordiale.jpg"),
+                    artists: ["Lime Cordiale"],
+                    title: "Temper Temper",
                     type: "album",
-                    album: "Lettre infinie"
+                    album: "Permanent Vacation"
                 },
-                
                 // Vanishing
                 {
-                    cover: require("@/assets/cover-art/skepta.jpg"),
-                    artists: ["Skepta"],
-                    title: "Bullets for fun",
+                    cover: require("@/assets/cover-art/julien.jpg"),
+                    artists: ["Damso"],
+                    title: "Julien",
                     type: "album",
-                    album: "Ignorance is Bliss"
+                    album: "Lithopédion"
                 },
             ]
         }
     },
     methods: {
+        playAudio() {
+            var currentAudio = this.tracks[this.current].audio
+            if(this.audioElem) {
+                this.audioElem.removeEventListener("ended", this.skipNext)
+                this.audioElem.pause();
+                this.audioElem.src = require('@/assets/audio/' + currentAudio + '.mp3');
+                this.audioElem.load()
+            } else {
+                this.audioElem = new Audio(require('@/assets/audio/' + currentAudio + '.mp3'));
+            }
+            this.audioElem.addEventListener("loadedmetadata", (event) => {
+                this.audioElem.play();
+                this.$store.commit("setPosition", 0)
+                this.$store.commit("setDuration", event.path[0].duration)
+            })
+            this.audioElem.addEventListener("ended", this.skipNext)
+        },
         fireDemoAlert() {
             if(this.demoAlertActive === false) {
                 this.demoAlertActive = true;
@@ -230,6 +246,20 @@ export default {
         playNext(key) {
             // this.trackChanging = true;
             this.tracks.splice(this.current+1, 0, this.tracks.splice(key, 1)[0]);
+            this.playAudio()
+        },
+        togglePlay() {
+            if(this.isPlaying) {
+                this.audioElem.pause();
+                this.isPlaying = false;
+                this.$store.commit("setPosition", this.audioElem.currentTime)
+            } else {
+                this.audioElem.play()
+                this.isPlaying = true;
+            }
+        },
+        skipNext() {
+            this.skipTo(this.current+1)  
         },
         skipTo(key) {
             if(key !== this.current) {
@@ -239,6 +269,7 @@ export default {
                 this.getCurrPosition()
                 window.setTimeout(() => {
                     this.trackChanging = false;
+                    this.playAudio()
                 }, 500)
             }
         },
@@ -284,7 +315,6 @@ export default {
                 toSet[key].scale = toSet[key].scale * scaleVals[0];
 
                 const increase = 2020 - toSet[key].translateZ;
-                console.log(increase)
                 toSet[key].translateZ = 2020
                 
                 // const rotateEq = ( -1.769315 + 0.00006264449*increase + 0.00007140726*Math.pow(increase,2) ) * 4;
