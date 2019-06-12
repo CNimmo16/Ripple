@@ -51,8 +51,6 @@
                     this.$gsap.killAll();
                     const toIncrease = this.durationRaw - this.positionRaw;
                     const scaleFrom = this.positionRaw / this.durationRaw * 350
-                    console.log(toIncrease)
-                    console.log(scaleFrom)
                     this.$gsap.fromTo(window.document.getElementsByClassName("fill")[this.index], toIncrease, {css: {scaleX: scaleFrom}}, {css: {scaleX: 350},
                         ease: "linear",
                     })

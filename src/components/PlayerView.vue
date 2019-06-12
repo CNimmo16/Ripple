@@ -13,8 +13,8 @@
                 @skip-to="skipTo(index)" 
                 @play-next="playNext(index)"
                 
-                @skip-previous="skipTo(current-1)"
-                @skip-next="skipTo(current+1)"
+                @skip-previous="skipPrevious"
+                @skip-next="skipNext"
                 @toggle-play="togglePlay()"
                 @demo-alert="fireDemoAlert()" />
         </div>
@@ -195,7 +195,6 @@ export default {
                     type: "album",
                     album: "Permanent Vacation"
                 },
-                // Vanishing
                 {
                     cover: require("@/assets/cover-art/julien.jpg"),
                     artists: ["Damso"],
@@ -203,6 +202,14 @@ export default {
                     type: "album",
                     album: "Lithopédion"
                 },
+                // Vanishing
+                // {
+                //     cover: require("@/assets/cover-art/logique.jpg"),
+                //     artists: ["-M-"],
+                //     title: "Logique est ton écho",
+                //     type: "album",
+                //     album: "Lettre infinie"
+                // },
             ]
         }
     },
@@ -258,8 +265,19 @@ export default {
                 this.isPlaying = true;
             }
         },
+        skipPrevious() {
+            if(this.current > 4) {
+                this.skipTo(this.current-1)
+            } else {
+                this.fireDemoAlert()
+            }
+        },
         skipNext() {
-            this.skipTo(this.current+1)  
+            if(this.current < 6) {
+                this.skipTo(this.current+1)  
+            } else {
+                this.fireDemoAlert()
+            }
         },
         skipTo(key) {
             if(key !== this.current) {
@@ -408,6 +426,7 @@ export default {
     text-align: center;
     font-size: 1em;
     padding: 5px 20px;
+    pointer-events: none;
 }
 
 .fade-enter-active, .fade-leave-active {
