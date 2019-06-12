@@ -9,5 +9,5 @@ module.exports = {
             }
         }
     },
-    // publicPath: "/Ripple/"
+    publicPath: "/Ripple/"
 }
